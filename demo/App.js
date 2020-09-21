@@ -6,6 +6,10 @@
  * @flow strict-local
  */
 
+import 'react-native-gesture-handler';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -16,23 +20,51 @@ import {
   View,
   Text,
   StatusBar,
+  TouchableHighlight,
 } from 'react-native';
 
 import {
   Header,
   Colors,
-  DebugInstructions,
-  ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-const App: () => React$Node = () => {
+const Stack = createStackNavigator();
+
+const DetailScreen = (data) => {
+  let item = data.route.params.item;
+  return <Text>Park: {item.name}</Text>;
+};
+
+const App = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: 'React Native Demo' }}
+        />
+        <Stack.Screen name="Detail" component={DetailScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+const HomeScreen: () => React$Node = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
 
+  //handling onPress action
+  getDetail = (item) => {
+    navigation.navigate('Detail', { item })
+  }
+
   const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Text style={styles.title}>{item.name} - {item.zip_code}</Text>
-    </View>
+    <TouchableHighlight onPress={getDetail.bind(this, item)} underlayColor="white">
+        <View style={styles.item} >
+          <Text style={styles.title}>{item.name} - {item.zip_code}</Text>
+        </View>
+    </TouchableHighlight>
   );
 
   useEffect(() => {
@@ -43,7 +75,7 @@ const App: () => React$Node = () => {
       .finally(() => setLoading(false));
   }, []);
   return (
-    <>
+      <>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView>
           {global.HermesInternal == null ? null : (
@@ -53,8 +85,7 @@ const App: () => React$Node = () => {
           )}
           <View style={styles.body}>
             <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>React Native Demo</Text>
-              <Text style={styles.highlight}>Seattle Parks</Text>
+              <Text style={styles.sectionTitle}>Seattle Parks</Text>
             </View>
             <View >
               {isLoading ? <ActivityIndicator/> : (
@@ -67,7 +98,7 @@ const App: () => React$Node = () => {
             </View>
         </View>
       </SafeAreaView>
-    </>
+      </>
   );
 };
 
