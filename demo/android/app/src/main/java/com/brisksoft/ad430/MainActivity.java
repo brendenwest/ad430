@@ -1,4 +1,4 @@
-package com.demo;
+package com.brisksoft.ad430;
 
 import com.facebook.react.ReactActivity;
 
