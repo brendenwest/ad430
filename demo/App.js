@@ -9,16 +9,19 @@
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { getEmail, setEmail } from './auth_service';
 
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Button,
   FlatList,
   SafeAreaView,
   StyleSheet,
   ScrollView,
   View,
   Text,
+  TextInput,
   StatusBar,
   TouchableHighlight,
 } from 'react-native';
@@ -30,10 +33,13 @@ import {
 
 const Stack = createStackNavigator();
 
-const DetailScreen = (data) => {
-  let item = data.route.params.item;
-  return <Text>Park: {item.name}</Text>;
-};
+const login = async (text) => {
+    try {
+        await setEmail(text);
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 const App = () => {
   return (
@@ -44,13 +50,55 @@ const App = () => {
           component={HomeScreen}
           options={{ title: 'React Native Demo' }}
         />
-        <Stack.Screen name="Detail" component={DetailScreen} />
+        <Stack.Screen name="Parks" options={{ title: 'Seattle Parks' }} component={ParksScreen} />
+        <Stack.Screen name="Detail" options={{ title: 'Park Details' }} component={DetailScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
 
 const HomeScreen: () => React$Node = ({ navigation }) => {
+  const [text, setText] = useState('');
+
+  let value = "Enter Email";
+    _retrieveData = async () => {
+      try {
+        const value = await getEmail();
+        if (value !== null) {
+          // We have data!!
+          console.log(value);
+          setText(value);
+        }
+      } catch (error) {
+        // Error retrieving data
+      }
+    };
+
+  return (
+      <>
+        <TouchableHighlight onPress={() => navigation.navigate('Parks')} underlayColor="white">
+            <View>
+              <Text style={styles.item}>Parks</Text>
+            </View>
+        </TouchableHighlight>
+        <View>
+          <TextInput
+            style={{height: 40}}
+            placeholder={value}
+            onChangeText={text => setText(text)}
+            defaultValue={text}
+          />
+          <Button
+            onPress={() => login(text)}
+            title="Sign In"
+            color="#a3d6d7"
+          />
+        </View>
+      </>
+    )
+}
+
+const ParksScreen: () => React$Node = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
 
@@ -84,9 +132,6 @@ const HomeScreen: () => React$Node = ({ navigation }) => {
             </View>
           )}
           <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Seattle Parks</Text>
-            </View>
             <View >
               {isLoading ? <ActivityIndicator/> : (
                     <FlatList
@@ -100,6 +145,11 @@ const HomeScreen: () => React$Node = ({ navigation }) => {
       </SafeAreaView>
       </>
   );
+};
+
+const DetailScreen = (data) => {
+  let item = data.route.params.item;
+  return <Text>Park Location: {item.name}</Text>;
 };
 
 const styles = StyleSheet.create({
@@ -133,6 +183,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 4,
     marginHorizontal: 16,
+    color: Colors.black
   },
   highlight: {
     fontWeight: '700',
