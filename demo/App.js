@@ -13,10 +13,10 @@ import { getEmail, setEmail } from './auth_service';
 import { ParksScreen } from './parks';
 import { DetailScreen } from './location_detail';
 import { styles } from './styles';
+import { AppButton } from './components';
 
 import React, { useState } from 'react';
 import {
-  Button,
   View,
   Text,
   TextInput,
@@ -84,11 +84,12 @@ const HomeScreen: () => React$Node = ({ navigation }) => {
             onChangeText={text => setText(text)}
             defaultValue={text}
           />
-          <Button
+        <View style={styles.button}>
+          <AppButton
             onPress={() => login(text)}
             title="Sign In"
-            color="#a3d6d7"
           />
+        </View>
         </View>
       </>
     )

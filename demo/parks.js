@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { styles } from './styles';
 import {
   ActivityIndicator,
-  Button,
   FlatList,
   SafeAreaView,
   ScrollView,
@@ -12,10 +11,12 @@ import {
   StatusBar,
   TouchableHighlight,
 } from 'react-native';
+import { AppButton } from './components';
 
 export const ParksScreen: () => React$Node = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [mapview, setMapview] = useState(true);
 
   //handling onPress action
   const getDetail = (item) => {
@@ -37,6 +38,7 @@ export const ParksScreen: () => React$Node = ({ navigation }) => {
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);
+
   return (
       <>
       <StatusBar barStyle="dark-content" />
@@ -47,14 +49,30 @@ export const ParksScreen: () => React$Node = ({ navigation }) => {
             </View>
           )}
           <View style={styles.body}>
-            <View >
-              {isLoading ? <ActivityIndicator/> : (
+          <View style={styles.container}>
+              <AppButton
+                onPress={() => setMapview(true)}
+                title="Map"
+              />
+                <AppButton
+                  onPress={() => setMapview(false)}
+                  title="List"
+                />
+          </View>
+          <View >
+              {isLoading ? <ActivityIndicator/> : mapview ?
+              (
+                 <View><Text>Show Map</Text></View>
+              ) :
+              (
                     <FlatList
                       data={data}
                       keyExtractor={item => item.pmaid}
                       renderItem={renderItem}
                     />
-              )}
+              )
+
+              }
             </View>
         </View>
       </SafeAreaView>
