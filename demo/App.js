@@ -15,6 +15,12 @@ import { DetailScreen } from './location_detail';
 import { styles } from './styles';
 import { AppButton } from './components';
 
+import { credentials } from './credentials.js'
+
+// show credentials
+console.log(credentials)
+console.log(credentials.secret_id)
+
 import React, { useState } from 'react';
 import {
   View,
